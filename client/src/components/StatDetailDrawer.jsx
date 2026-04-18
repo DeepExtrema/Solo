@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { STATS } from '../data/stats.js'
 import { useStats } from '../state/statsStore.jsx'
+import { apiUrl } from '../lib/apiBase.js'
 
 export default function StatDetailDrawer({ statKey, onClose }) {
   const { raw } = useStats()
@@ -9,7 +10,7 @@ export default function StatDetailDrawer({ statKey, onClose }) {
 
   useEffect(() => {
     if (statKey === 'STR' || statKey === 'VIT' || statKey === 'SEN') {
-      fetch('/api/fitbit/series').then(r => r.ok ? r.json() : null).then(setSeries).catch(() => {})
+      fetch(apiUrl('/api/fitbit/series')).then(r => r.ok ? r.json() : null).then(setSeries).catch(() => {})
     }
   }, [statKey])
 

@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { computeStats } from '../data/stats.js'
+import { apiUrl } from '../lib/apiBase.js'
 
 const POLL_MS = 15 * 60 * 1000 // 15 minutes
 const YESTERDAY_KEY = 'parallax-gate::stats-yesterday'
@@ -24,7 +25,7 @@ export function StatsProvider({ chaBonus = 0, children, onAutoQuest }) {
 
   const refreshHealth = useCallback(async () => {
     try {
-      const r = await fetch('/api/health')
+      const r = await fetch(apiUrl('/api/health'))
       if (!r.ok) throw new Error('health ' + r.status)
       const j = await r.json()
       setHealth(j)
@@ -38,7 +39,7 @@ export function StatsProvider({ chaBonus = 0, children, onAutoQuest }) {
   const refreshStats = useCallback(async (force = false) => {
     setStatus('loading')
     try {
-      const url = force ? '/api/stats/force-sync' : '/api/stats'
+      const url = force ? apiUrl('/api/stats/force-sync') : apiUrl('/api/stats')
       const r = await fetch(url, { method: force ? 'POST' : 'GET' })
       if (!r.ok) throw new Error('stats ' + r.status)
       const j = await r.json()

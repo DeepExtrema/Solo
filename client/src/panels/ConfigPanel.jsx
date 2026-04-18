@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useStats } from '../state/statsStore.jsx'
+import { apiUrl, fitbitCallbackUrl } from '../lib/apiBase.js'
 
 export default function ConfigPanel() {
   const { health, refreshHealth, refresh, status, lastSync } = useStats()
@@ -9,17 +10,18 @@ export default function ConfigPanel() {
   const [lcUser, setLcUser] = useState('')
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState(null)
+  const callbackUrl = fitbitCallbackUrl()
 
   useEffect(() => { loadConfig() }, [])
 
   async function loadConfig() {
     try {
-      const r = await fetch('/api/config')
+      const r = await fetch(apiUrl('/api/config'))
       if (!r.ok) throw new Error('config ' + r.status)
       const j = await r.json()
       setConfig(j)
       setLcUser(j.leetcode?.username || '')
-    } catch (e) { setMsg({ err: true, text: 'Server offline. Is the backend running on :3001?' }) }
+    } catch (e) { setMsg({ err: true, text: 'Backend unreachable. Check VITE_API_BASE_URL and server deployment.' }) }
   }
 
   async function saveFitbit() {
@@ -28,7 +30,7 @@ export default function ConfigPanel() {
     if (!cleanId || !cleanSecret) return setMsg({ err: true, text: 'Both client_id and client_secret required.' })
     setSaving(true); setMsg(null)
     try {
-      const r = await fetch('/api/config/fitbit', {
+      const r = await fetch(apiUrl('/api/config/fitbit'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ client_id: cleanId, client_secret: cleanSecret })
@@ -45,7 +47,7 @@ export default function ConfigPanel() {
     if (!lcUser.trim()) return setMsg({ err: true, text: 'Username required.' })
     setSaving(true); setMsg(null)
     try {
-      const r = await fetch('/api/config/leetcode', {
+      const r = await fetch(apiUrl('/api/config/leetcode'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: lcUser.trim() })
@@ -58,13 +60,13 @@ export default function ConfigPanel() {
   }
 
   async function startFitbitAuth() {
-    window.open('/fitbit/authorize', '_blank')
+    window.open(apiUrl('/fitbit/authorize'), '_blank')
     setMsg({ ok: true, text: 'Fitbit auth opened in new tab. Complete authorization, then click REFRESH STATUS.' })
   }
 
   async function disconnectFitbit() {
     if (!confirm('Disconnect Fitbit? You will need to re-authorize.')) return
-    const r = await fetch('/api/fitbit/disconnect', { method: 'POST' })
+    const r = await fetch(apiUrl('/api/fitbit/disconnect'), { method: 'POST' })
     if (r.ok) { setMsg({ ok: true, text: 'Fitbit disconnected.' }); await loadConfig(); await refreshHealth() }
   }
 
@@ -93,7 +95,7 @@ export default function ConfigPanel() {
             {' '}<a href="https://dev.fitbit.com/apps/new" target="_blank" rel="noreferrer" style={{ color: 'var(--sys-cyan)' }}>dev.fitbit.com</a>.
             Set the callback URL to:
             <code style={{ display: 'inline-block', margin: '0 4px', padding: '2px 6px', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--border-dim)', color: 'var(--sys-cyan)' }}>
-              http://localhost:3001/fitbit/callback
+              {callbackUrl}
             </code>
             Request the scopes: <em style={{ color: 'var(--text-primary)' }}>activity heartrate sleep profile settings</em>.
           </p>
