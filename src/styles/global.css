@@ -1,0 +1,171 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  background: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  overflow: hidden;
+}
+
+body {
+  position: relative;
+  letter-spacing: 0.02em;
+}
+
+/* Animated grid background */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(94, 225, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(94, 225, 255, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: gridDrift 80s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(ellipse at center, #000 40%, transparent 90%);
+}
+
+/* Subtle scanline */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.012) 0px,
+    rgba(255, 255, 255, 0.012) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes gridDrift {
+  0% { background-position: 0 0, 0 0; }
+  100% { background-position: 480px 480px, 480px 480px; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 12px var(--rank-glow), inset 0 0 12px rgba(94,225,255,0.05); }
+  50%      { box-shadow: 0 0 24px var(--rank-glow), inset 0 0 18px rgba(94,225,255,0.10); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes runeFloat {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.4; }
+  90%  { opacity: 0.4; }
+  100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+button {
+  font-family: var(--font-mono);
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--border-mid);
+  color: var(--text-primary);
+  padding: 8px 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 11px;
+  transition: all 180ms var(--ease-out);
+}
+
+button:hover {
+  border-color: var(--border-hot);
+  box-shadow: 0 0 18px var(--sys-cyan-glow);
+  color: var(--sys-cyan);
+}
+
+button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-hot); }
+
+/* Utility */
+.mono { font-family: var(--font-mono); }
+.display { font-family: var(--font-display); }
+.uppercase { text-transform: uppercase; letter-spacing: 0.15em; }
+.dim { color: var(--text-secondary); }
+.faint { color: var(--text-muted); }
+
+.panel {
+  position: relative;
+  background: linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-panel-2) 100%);
+  border: 1px solid var(--border-dim);
+  border-radius: 2px;
+}
+
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-top: 1px solid var(--border-hot);
+  opacity: 0.3;
+}
+
+.panel-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: var(--sys-cyan);
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-dim);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(94, 225, 255, 0.03);
+}
+
+.panel-title::before {
+  content: "▸ ";
+  color: var(--sys-cyan);
+  margin-right: 4px;
+}
+
+.panel-body { padding: 16px; }
+
+.tag {
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid var(--border-mid);
+  color: var(--text-secondary);
+}
+
+.hl { color: var(--sys-cyan); text-shadow: 0 0 12px var(--sys-cyan-glow); }
+.hl-rank { color: var(--rank-color); text-shadow: 0 0 12px var(--rank-glow); }
