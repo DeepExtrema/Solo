@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+.env.local
+server/tokens.json
+server/credentials.json
+server/error.log
+.DS_Store
+.vite/
