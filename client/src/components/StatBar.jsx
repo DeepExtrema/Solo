@@ -5,7 +5,7 @@ import { STATS, stateOf } from '../data/stats.js'
 const ARROW = { up: '▲', down: '▼', flat: '▬' }
 const ARROW_COLOR = { up: 'var(--ok)', down: 'var(--warn)', flat: 'var(--text-muted)' }
 
-export default function StatBar({ statKey, value, trend, source, onClick, debuffs }) {
+export default function StatBar({ statKey, value, trend, source, onClick, debuffs, allocated, onAllocate, canAllocate }) {
   const def = STATS[statKey]
   const state = stateOf(value)
   const pct = Math.max(2, Math.min(100, value))
@@ -54,6 +54,15 @@ export default function StatBar({ statKey, value, trend, source, onClick, debuff
               ▼ [DEBUFFED {totalDelta > 0 ? '' : totalDelta}]
             </span>
           )}
+          {allocated > 0 && (
+            <span style={{
+              marginLeft: 8, fontSize: 9, letterSpacing: '0.25em',
+              color: 'var(--legendary)', fontFamily: 'var(--font-display)', fontWeight: 800,
+              textShadow: '0 0 8px var(--legendary-glow)'
+            }}>
+              ◆ +{allocated} ALLOC
+            </span>
+          )}
           <span style={{ color: 'var(--text-muted)', marginLeft: 8, fontSize: 9, letterSpacing: '0.25em' }}>
             {def.label}
           </span>
@@ -94,6 +103,25 @@ export default function StatBar({ statKey, value, trend, source, onClick, debuff
         <div style={{ color: 'var(--text-muted)', fontSize: 10, letterSpacing: '0.2em', minWidth: 36, textAlign: 'right' }}>
           / 100
         </div>
+        {onAllocate && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onAllocate(statKey) }}
+            disabled={!canAllocate}
+            title={canAllocate ? `Allocate 1 point to ${def.name}` : 'No points available'}
+            style={{
+              minWidth: 32, height: 28,
+              padding: '0 8px',
+              marginLeft: 6,
+              fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 14,
+              color: canAllocate ? 'var(--legendary)' : 'var(--text-muted)',
+              borderColor: canAllocate ? 'var(--legendary)' : 'var(--border-dim)',
+              background: canAllocate ? 'rgba(255,215,106,0.08)' : 'rgba(0,0,0,0.3)',
+              boxShadow: canAllocate ? '0 0 10px var(--legendary-glow)' : 'none',
+              cursor: canAllocate ? 'pointer' : 'not-allowed'
+            }}>
+            +
+          </button>
+        )}
       </div>
 
       {def.source !== 'QUEST' && source?.lastUpdated && (

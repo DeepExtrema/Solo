@@ -18,6 +18,28 @@ function writeYesterday(obj) {
   try { localStorage.setItem(YESTERDAY_KEY, JSON.stringify(obj)) } catch {}
 }
 
+// Derive workout cadence signals from the log for computeStats.
+// - streak: consecutive days ending today with at least one session.
+// - sessionsLast7: count of sessions in the last 7 days.
+function deriveWorkout(log = []) {
+  const today = new Date()
+  const toKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  const keys = new Set(log.map(w => w.date))
+  let streak = 0
+  for (let i = 0; ; i++) {
+    const d = new Date(today)
+    d.setDate(today.getDate() - i)
+    if (keys.has(toKey(d))) streak++
+    else break
+  }
+  const weekAgo = Date.now() - 7 * 86400000
+  const sessionsLast7 = log.filter(w => {
+    const t = new Date(w.date + 'T12:00:00').getTime()
+    return Number.isFinite(t) && t > weekAgo
+  }).length
+  return { streak, sessionsLast7 }
+}
+
 export function StatsProvider({ chaBonus = 0, children, onAutoQuest }) {
   const { state: gameState, applySleepNight, unlockAllStat } = useStore()
   const [raw, setRaw]           = useState({ fitbit: null, leetcode: null })
@@ -110,9 +132,16 @@ export function StatsProvider({ chaBonus = 0, children, onAutoQuest }) {
     const today = new Date().toISOString().slice(0, 10)
     const prev = readYesterday()
     if (!prev || prev.date !== today) {
-      if (!prev) writeYesterday({ date: today, stats: computeStats({ ...raw, chaBonus }) })
+      if (!prev) writeYesterday({
+        date: today,
+        stats: computeStats({
+          ...raw, chaBonus,
+          workout: deriveWorkout(gameState.workoutLog),
+          allocated: gameState.allocatedPoints
+        })
+      })
     }
-  }, [raw, chaBonus, status])
+  }, [raw, chaBonus, status, gameState.workoutLog, gameState.allocatedPoints])
 
   // Stale detection (if last sync > STALE_MS)
   useEffect(() => {
@@ -124,7 +153,11 @@ export function StatsProvider({ chaBonus = 0, children, onAutoQuest }) {
     return () => clearInterval(t)
   }, [lastSync])
 
-  const baseStats = useMemo(() => computeStats({ ...raw, chaBonus }), [raw, chaBonus])
+  const workout = useMemo(() => deriveWorkout(gameState.workoutLog), [gameState.workoutLog])
+  const baseStats = useMemo(
+    () => computeStats({ ...raw, chaBonus, workout, allocated: gameState.allocatedPoints }),
+    [raw, chaBonus, workout, gameState.allocatedPoints]
+  )
 
   const damper = gameState.classKey === 'IRON' ? { stats: ['STR', 'VIT'], factor: 0.5 } : null
   const { stats: debuffed, byStat: debuffByStat } = useMemo(
@@ -154,12 +187,12 @@ export function StatsProvider({ chaBonus = 0, children, onAutoQuest }) {
   }, [stats, yesterday])
 
   const api = useMemo(() => ({
-    raw, baseStats, stats, debuffByStat, trends,
+    raw, baseStats, stats, debuffByStat, trends, workout,
     sleep, refreshSleep,
     health, refreshHealth,
     status, lastSync,
     refresh: (force = true) => refreshStats(force)
-  }), [raw, baseStats, stats, debuffByStat, trends, sleep, refreshSleep, health, status, lastSync, refreshHealth, refreshStats])
+  }), [raw, baseStats, stats, debuffByStat, trends, workout, sleep, refreshSleep, health, status, lastSync, refreshHealth, refreshStats])
 
   return <StatsCtx.Provider value={api}>{children}</StatsCtx.Provider>
 }

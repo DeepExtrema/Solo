@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { RANKS, rankFromXP } from '../data/ranks.js'
+import { STAT_KEYS } from '../data/stats.js'
 import { DAILY_QUESTS, MAIN_QUESTS } from '../data/quests.js'
 import { NODES, nodeStatus } from '../data/skillTree.js'
 import { LORE_ENTRIES } from '../data/lore.js'
@@ -93,6 +94,15 @@ function initialState() {
     penaltyQuest: null,          // { issuedAt, dayKey, resolved }
     interferenceFlag: false,     // next main-quest-like completion has doubled XP (or next daily)
 
+    // --- Rank-up point allocation (manhwa "stat build" mechanic) ---
+    // 5 points per rank-up, manually assigned; up to +40 per stat.
+    allocatedPoints: { STR: 0, VIT: 0, INT: 0, AGI: 0, SEN: 0, CHA: 0 },
+    pointsAvailable: 0,
+
+    // --- Self-reported workout log ---
+    // [{ date: 'YYYY-MM-DD', type: 'strength'|'cardio'|'mobility', duration, notes }]
+    workoutLog: [],
+
     notifSeen: { jobChangeOffered: false, classUnlocked: false, allStat: false }
   }
 }
@@ -113,7 +123,10 @@ function hydrate() {
       recoveryDungeon: { ...initialState().recoveryDungeon, ...(parsed.recoveryDungeon || {}) },
       notifSeen:     { ...initialState().notifSeen, ...(parsed.notifSeen || {}) },
       debuffs:       Array.isArray(parsed.debuffs) ? parsed.debuffs : [],
-      sleepHistory:  Array.isArray(parsed.sleepHistory) ? parsed.sleepHistory : []
+      sleepHistory:  Array.isArray(parsed.sleepHistory) ? parsed.sleepHistory : [],
+      allocatedPoints: { ...initialState().allocatedPoints, ...(parsed.allocatedPoints || {}) },
+      pointsAvailable: Number.isFinite(parsed.pointsAvailable) ? parsed.pointsAvailable : 0,
+      workoutLog:    Array.isArray(parsed.workoutLog) ? parsed.workoutLog : []
     }
     merged.dailyProgress = { ...freshDailyState(), ...(parsed.dailyProgress || {}) }
     return merged
@@ -127,11 +140,16 @@ function persist(state) {
 }
 
 function grantXP(state, amount) {
-  const prevRank = rankFromXP(state.xp).key
+  const prevRankKey = rankFromXP(state.xp).key
   const nextXP = state.xp + amount
   const nextRankKey = rankFromXP(nextXP).key
-  const rankedUp = prevRank !== nextRankKey
-  return { xp: nextXP, rankedUp, newRankKey: nextRankKey }
+  const rankedUp = prevRankKey !== nextRankKey
+  // 5 allocation points per rank gained (handles multi-rank jumps from large XP grants).
+  const prevIdx = RANKS.findIndex(r => r.key === prevRankKey)
+  const nextIdx = RANKS.findIndex(r => r.key === nextRankKey)
+  const ranksGained = Math.max(0, nextIdx - prevIdx)
+  const pointsGranted = rankedUp ? ranksGained * 5 : 0
+  return { xp: nextXP, rankedUp, newRankKey: nextRankKey, pointsGranted }
 }
 
 // --- Class XP multipliers & gold hooks ---
@@ -275,6 +293,7 @@ function reducer(state, action) {
       return {
         ...state,
         xp: grant.xp,
+        pointsAvailable: (state.pointsAvailable ?? 0) + (grant.pointsGranted || 0),
         dailyProgress,
         streak,
         lastStreakDate,
@@ -289,7 +308,8 @@ function reducer(state, action) {
           amount: finalXp,
           source: quest.name,
           rankedUp: grant.rankedUp,
-          newRankKey: grant.newRankKey
+          newRankKey: grant.newRankKey,
+          pointsGranted: grant.pointsGranted
         }
       }
     }
@@ -325,13 +345,14 @@ function reducer(state, action) {
       return {
         ...state,
         xp: grant.xp,
+        pointsAvailable: (state.pointsAvailable ?? 0) + (grant.pointsGranted || 0),
         completedQuests: [...state.completedQuests, questId],
         titlesEarned,
         completedNodes,
         journal,
         inventory: { ...state.inventory, tokens: nextTokens },
         interferenceFlag,
-        _lastEvent: { kind: 'quest', quest, rankedUp: grant.rankedUp, newRankKey: grant.newRankKey }
+        _lastEvent: { kind: 'quest', quest, rankedUp: grant.rankedUp, newRankKey: grant.newRankKey, pointsGranted: grant.pointsGranted }
       }
     }
 
@@ -348,9 +369,10 @@ function reducer(state, action) {
       return {
         ...state,
         xp: grant.xp,
+        pointsAvailable: (state.pointsAvailable ?? 0) + (grant.pointsGranted || 0),
         completedNodes: [...state.completedNodes, nodeId],
         journal,
-        _lastEvent: { kind: 'node', node, rankedUp: grant.rankedUp, newRankKey: grant.newRankKey }
+        _lastEvent: { kind: 'node', node, rankedUp: grant.rankedUp, newRankKey: grant.newRankKey, pointsGranted: grant.pointsGranted }
       }
     }
 
@@ -497,7 +519,7 @@ function reducer(state, action) {
       switch (eff.kind) {
         case 'xp': {
           const grant = grantXP(next, eff.amount)
-          next = { ...next, xp: Math.max(0, grant.xp), _lastEvent: { kind: 'xp', amount: eff.amount, source: box.label, rankedUp: grant.rankedUp, newRankKey: grant.newRankKey } }
+          next = { ...next, xp: Math.max(0, grant.xp), pointsAvailable: (next.pointsAvailable ?? 0) + (grant.pointsGranted || 0), _lastEvent: { kind: 'xp', amount: eff.amount, source: box.label, rankedUp: grant.rankedUp, newRankKey: grant.newRankKey, pointsGranted: grant.pointsGranted } }
           break
         }
         case 'gold': {
@@ -556,8 +578,9 @@ function reducer(state, action) {
       return {
         ...state,
         xp: Math.max(0, grant.xp),
+        pointsAvailable: (state.pointsAvailable ?? 0) + (grant.pointsGranted || 0),
         penaltyQuest: { ...state.penaltyQuest, resolved: true, won },
-        _lastEvent: { kind: 'xp', amount: delta, source: 'PENALTY QUEST', rankedUp: grant.rankedUp, newRankKey: grant.newRankKey }
+        _lastEvent: { kind: 'xp', amount: delta, source: 'PENALTY QUEST', rankedUp: grant.rankedUp, newRankKey: grant.newRankKey, pointsGranted: grant.pointsGranted }
       }
     }
 
@@ -592,8 +615,9 @@ function reducer(state, action) {
       return {
         ...state,
         xp: grant.xp,
+        pointsAvailable: (state.pointsAvailable ?? 0) + (grant.pointsGranted || 0),
         activeDungeon: { ...state.activeDungeon, floors },
-        _lastEvent: { kind: 'xp', amount: thisFloor.xp, source: `${state.activeDungeon.name} :: ${thisFloor.label}`, rankedUp: grant.rankedUp, newRankKey: grant.newRankKey }
+        _lastEvent: { kind: 'xp', amount: thisFloor.xp, source: `${state.activeDungeon.name} :: ${thisFloor.label}`, rankedUp: grant.rankedUp, newRankKey: grant.newRankKey, pointsGranted: grant.pointsGranted }
       }
     }
 
@@ -605,13 +629,14 @@ function reducer(state, action) {
       return {
         ...state,
         xp: grant.xp,
+        pointsAvailable: (state.pointsAvailable ?? 0) + (grant.pointsGranted || 0),
         activeDungeon: null,
         inventory: {
           ...state.inventory,
           gold: state.inventory.gold + (d.rewardGold || 0),
           titleFragments: state.inventory.titleFragments + (d.rewardFragment ? 1 : 0)
         },
-        _lastEvent: { kind: 'xp', amount: d.rewardXp, source: `${d.name} :: CLEARED`, rankedUp: grant.rankedUp, newRankKey: grant.newRankKey }
+        _lastEvent: { kind: 'xp', amount: d.rewardXp, source: `${d.name} :: CLEARED`, rankedUp: grant.rankedUp, newRankKey: grant.newRankKey, pointsGranted: grant.pointsGranted }
       }
     }
 
@@ -632,6 +657,45 @@ function reducer(state, action) {
       return next
     }
 
+    case 'ALLOCATE_POINT': {
+      const { stat } = action
+      if ((state.pointsAvailable ?? 0) <= 0) return state
+      if (!STAT_KEYS.includes(stat)) return state
+      const current = state.allocatedPoints?.[stat] ?? 0
+      if (current >= 40) return state
+      return {
+        ...state,
+        pointsAvailable: state.pointsAvailable - 1,
+        allocatedPoints: { ...(state.allocatedPoints || {}), [stat]: current + 1 }
+      }
+    }
+
+    case 'LOG_WORKOUT': {
+      const w = action.workout
+      if (!w?.date) return state
+      // De-dupe by (date, type) so logging the same session twice doesn't stack.
+      const key = (x) => `${x.date}::${x.type || 'any'}`
+      const existingIdx = state.workoutLog.findIndex(x => key(x) === key(w))
+      const entry = {
+        date:     w.date,
+        type:     w.type || 'strength',
+        duration: Number.isFinite(w.duration) ? w.duration : null,
+        notes:    w.notes || ''
+      }
+      const log = existingIdx >= 0
+        ? state.workoutLog.map((x, i) => i === existingIdx ? entry : x)
+        : [entry, ...state.workoutLog].slice(0, 365) // keep 1 year
+      return { ...state, workoutLog: log }
+    }
+
+    case 'DELETE_WORKOUT': {
+      const { date, workoutType } = action
+      return {
+        ...state,
+        workoutLog: state.workoutLog.filter(w => !(w.date === date && (workoutType ? w.type === workoutType : true)))
+      }
+    }
+
     case 'RESET': return initialState()
 
     case 'REPLACE_STATE': {
@@ -650,6 +714,9 @@ function reducer(state, action) {
         notifSeen:     { ...initialState().notifSeen,       ...(incoming.notifSeen || {}) },
         debuffs:       Array.isArray(incoming.debuffs) ? incoming.debuffs : [],
         sleepHistory:  Array.isArray(incoming.sleepHistory) ? incoming.sleepHistory : [],
+        allocatedPoints: { ...initialState().allocatedPoints, ...(incoming.allocatedPoints || {}) },
+        pointsAvailable: Number.isFinite(incoming.pointsAvailable) ? incoming.pointsAvailable : 0,
+        workoutLog:    Array.isArray(incoming.workoutLog) ? incoming.workoutLog : [],
         dailyProgress: { ...freshDailyState(), ...(incoming.dailyProgress || {}) }
       }
     }
@@ -764,6 +831,9 @@ export function StoreProvider({ children }) {
     dungeonClaim: () => dispatch({ type: 'DUNGEON_CLAIM' }),
     dungeonAbandon: () => dispatch({ type: 'DUNGEON_ABANDON' }),
     unlockAllStat: () => dispatch({ type: 'UNLOCK_ALL_STAT' }),
+    allocatePoint: (stat) => dispatch({ type: 'ALLOCATE_POINT', stat }),
+    logWorkout: (workout) => dispatch({ type: 'LOG_WORKOUT', workout }),
+    deleteWorkout: (date, workoutType) => dispatch({ type: 'DELETE_WORKOUT', date, workoutType }),
     ceremony,
     dismissCeremony: () => setCeremony(null)
   }), [state, rank, ceremony])

@@ -66,80 +66,94 @@ export const CHA_QUESTS = new Set(['m1', 'm2', 'm4', 'm5', 'm9'])
 // All formulas return a number 0..100 (clamped).
 const clamp100 = v => Math.max(0, Math.min(100, v))
 
-export function computeStats({ fitbit, leetcode, chaBonus }) {
+export function computeStats({ fitbit, leetcode, chaBonus, workout, allocated } = {}) {
   const vit = fitbit?.vitals || {}
-  const readiness = vit.readiness?.score
-  const hrvRmssd  = vit.hrv?.rmssd
-  const rhr       = vit.restingHeartRate ?? fitbit?.restingHeartRate ?? null
-  const spo2Avg   = vit.spo2?.avg
-  const brDeep    = vit.breathingRate?.deep
-  const brOverall = vit.breathingRate?.overall
+  const readiness    = vit.readiness?.score
+  const hrvRmssd     = vit.hrv?.rmssd
+  const rhr          = vit.restingHeartRate ?? fitbit?.restingHeartRate ?? null
+  const spo2Avg      = vit.spo2?.avg
+  const brOverall    = vit.breathingRate?.overall
   const recoveryScore = fitbit?.sleep?.recoveryScore
 
   // ---- STRENGTH ----
-  // Active Zone Minutes are Fitbit's own elevated-heart-rate metric — weight them as the
-  // strongest signal, and keep raw active minutes + floors as supporting inputs.
-  const activeMinutes = fitbit?.activeMinutes ?? 0
-  const azm           = fitbit?.activeZoneMinutes ?? 0
-  const floors        = fitbit?.floors ?? 0
-  const STR = fitbit?.connected
-    ? clamp100((activeMinutes / 60) * 40 + (azm / 30) * 30 + (floors / 10) * 30)
+  // Each sub-score is capped at 100 before weighting, so no single metric can
+  // saturate STR on its own. Workout streak adds a small bonus on top (up to +15).
+  const activeMin = fitbit?.activeMinutes ?? 0
+  const azm       = fitbit?.activeZoneMinutes ?? 0
+  const floors    = fitbit?.floors ?? 0
+  const wStreak   = workout?.streak ?? 0
+  const wLast7    = workout?.sessionsLast7 ?? 0
+
+  const strBase = fitbit?.connected
+    ? (sub(activeMin, 60) * 0.30
+     + sub(azm, 22)       * 0.35
+     + sub(floors, 15)    * 0.15
+     + sub(wLast7, 4)     * 0.20)
     : 0
+  const streakBonus = Math.min(15, wStreak)
+  const STR = strBase + streakBonus
 
   // ---- VITALITY ----
-  // Priority: readiness.score > sleep.recoveryScore > legacy efficiency/rhr formula.
-  // Then apply HRV + RHR modifiers.
+  // Priority: readiness.score > sleep.recoveryScore > legacy fallback.
   let vitBase
-  if (typeof readiness === 'number') {
-    vitBase = readiness
-  } else if (typeof recoveryScore === 'number') {
-    vitBase = recoveryScore
-  } else if (fitbit?.connected) {
-    vitBase = ((fitbit.sleepEfficiency ?? 0) / 100) * 60 + (100 - (rhr ?? 100)) * 0.4
+  if (typeof readiness === 'number')            vitBase = readiness
+  else if (typeof recoveryScore === 'number')   vitBase = recoveryScore
+  else if (fitbit?.connected) {
+    vitBase = ((fitbit.sleepEfficiency ?? 0) / 100) * 60 + Math.max(0, 100 - (rhr ?? 100)) * 0.4
   } else {
     vitBase = 0
   }
   let hrvMod = 0
-  if (typeof hrvRmssd === 'number') {
-    if (hrvRmssd > 50) hrvMod = +5
-    else if (hrvRmssd < 25) hrvMod = -10
-  }
+  if (typeof hrvRmssd === 'number') hrvMod = hrvRmssd > 50 ? +5 : hrvRmssd < 25 ? -10 : 0
   let rhrMod = 0
-  if (typeof rhr === 'number') {
-    if (rhr < 60) rhrMod = +5
-    else if (rhr > 80) rhrMod = -10
-  }
-  const VIT = fitbit?.connected ? clamp100(vitBase + hrvMod + rhrMod) : 0
+  if (typeof rhr === 'number')      rhrMod = rhr < 60 ? +5 : rhr > 80 ? -10 : 0
+  const VIT = fitbit?.connected ? (vitBase + hrvMod + rhrMod) : 0
 
   // ---- INTELLIGENCE ----
+  // Cumulative with diminishing returns via log1p. ~200 weighted-problems ≈ 85 pts.
+  const weighted =
+    (leetcode?.easySolved   ?? 0) * 1 +
+    (leetcode?.mediumSolved ?? 0) * 2 +
+    (leetcode?.hardSolved   ?? 0) * 4
   const INT = leetcode?.connected
-    ? clamp100(((leetcode.easySolved ?? 0) * 1 + (leetcode.mediumSolved ?? 0) * 2 + (leetcode.hardSolved ?? 0) * 4) / 5)
+    ? Math.min(100, Math.log1p(weighted) * 16)
     : 0
 
   // ---- AGILITY ----
-  // Execution speed via LeetCode cadence, with a small breathing-rate penalty
-  // when deep-sleep respiration is outside the healthy 12-20 brpm band.
+  // Cadence over spikes. Breathing-rate penalty retained.
+  const subs30     = leetcode?.submissionsLast30 ?? 0
+  const subs7      = leetcode?.submissionsLast7 ?? 0
+  const acceptance = leetcode?.acceptanceRate ?? 0
+
   const agiBase = leetcode?.connected
-    ? ((leetcode.submissionsLast30 ?? 0) / 30) * 70 + (leetcode.acceptanceRate ?? 0) * 0.3
+    ? (sub(subs30 / 30, 1.5) * 0.45
+     + sub(subs7, 10)         * 0.30
+     + sub(acceptance, 70)    * 0.25)
     : 0
-  const brRef = typeof brDeep === 'number' ? brDeep : brOverall
-  const brMod = typeof brRef === 'number' && (brRef < 12 || brRef > 20) ? -5 : 0
-  const AGI = leetcode?.connected ? clamp100(agiBase + brMod) : 0
+  const brMod = typeof brOverall === 'number' && (brOverall < 12 || brOverall > 20) ? -5 : 0
+  const AGI = leetcode?.connected ? (agiBase + brMod) : 0
 
   // ---- SENSE ----
-  // Steps-driven, moderated by blood-oxygen saturation. Low SpO2 means the body isn't
-  // operating at peak and should dim perception.
   let spo2Mod = 0
-  if (typeof spo2Avg === 'number') {
-    if (spo2Avg < 90) spo2Mod = -15
-    else if (spo2Avg < 95) spo2Mod = -5
-  }
-  const senBase = fitbit?.connected ? ((fitbit.steps ?? 0) / 10000) * 100 : 0
-  const SEN = fitbit?.connected ? clamp100(senBase + spo2Mod) : 0
+  if (typeof spo2Avg === 'number') spo2Mod = spo2Avg < 90 ? -15 : spo2Avg < 95 ? -5 : 0
+  const senBase = fitbit?.connected ? sub(fitbit?.steps ?? 0, 12000) : 0
+  const SEN = fitbit?.connected ? (senBase + spo2Mod) : 0
 
-  const CHA = clamp100(chaBonus || 0)
-  return { STR, VIT, INT, AGI, SEN, CHA }
+  // ---- CHARISMA ----
+  const CHA = chaBonus || 0
+
+  // Apply allocated points, then final clamp.
+  const raw = { STR, VIT, INT, AGI, SEN, CHA }
+  const out = {}
+  for (const k of STAT_KEYS) {
+    out[k] = clamp100(Math.round((raw[k] ?? 0) + (allocated?.[k] ?? 0)))
+  }
+  return out
 }
+
+// Cap a single metric at 100 before weighting — prevents any one input
+// (e.g. 42 floors) from saturating the stat on its own.
+const sub = (v, target) => Math.min(100, Math.max(0, ((v ?? 0) / target) * 100))
 
 // Tier colors for bar visual states
 export function stateOf(value) {

@@ -10,11 +10,14 @@ import StatBar from '../components/StatBar.jsx'
 import StatRadar from '../components/StatRadar.jsx'
 import StatDetailDrawer from '../components/StatDetailDrawer.jsx'
 import FatigueBadge from '../components/FatigueBadge.jsx'
+import WorkoutLogPanel from '../components/WorkoutLogPanel.jsx'
 import { CLASSES } from '../data/classes.js'
 
 export default function ProfilePanel() {
-  const { state, rank, equipTitle, setName, resetAll } = useStore()
+  const { state, rank, equipTitle, setName, resetAll, allocatePoint } = useStore()
   const { stats, trends, raw, status, debuffByStat } = useStats()
+  const pointsAvailable = state.pointsAvailable ?? 0
+  const allocatedPoints = state.allocatedPoints || {}
   const flags = state.featureFlags || {}
   const cls = state.classKey ? CLASSES[state.classKey] : null
   const [nameEdit, setNameEdit] = useState(state.hunterName)
@@ -120,6 +123,20 @@ export default function ProfilePanel() {
         </div>
       </section>
 
+      {pointsAvailable > 0 && (
+        <section className="panel" style={{ borderColor: 'var(--legendary)', boxShadow: '0 0 28px var(--legendary-glow)' }}>
+          <div className="panel-title" style={{ color: 'var(--legendary)' }}>
+            <span>◆ RANK-UP POINTS AVAILABLE</span>
+            <span style={{ color: 'var(--legendary)', textShadow: '0 0 10px var(--legendary-glow)' }}>
+              {pointsAvailable} UNSPENT
+            </span>
+          </div>
+          <div className="panel-body" style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+            The System has recognized your rise. Click <span style={{ color: 'var(--legendary)' }}>+</span> next to any stat below to commit a point. Up to +40 per stat.
+          </div>
+        </section>
+      )}
+
       <section className="panel">
         <div className="panel-title">
           <span>STAT DISTRIBUTION :: LIVE BIOMETRIC LINK</span>
@@ -146,6 +163,9 @@ export default function ProfilePanel() {
                   trend={trends[k]}
                   source={source}
                   debuffs={debuffByStat?.[k]}
+                  allocated={allocatedPoints[k] || 0}
+                  onAllocate={allocatePoint}
+                  canAllocate={pointsAvailable > 0 && (allocatedPoints[k] || 0) < 40}
                   onClick={() => setDrawerStat(k)}
                 />
               )
@@ -158,6 +178,8 @@ export default function ProfilePanel() {
       </section>
 
       <StatDetailDrawer statKey={drawerStat} onClose={() => setDrawerStat(null)} />
+
+      <WorkoutLogPanel />
 
       <section className="panel">
         <div className="panel-title">
