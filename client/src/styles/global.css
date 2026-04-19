@@ -169,3 +169,59 @@ h1, h2, h3, h4 {
 
 .hl { color: var(--sys-cyan); text-shadow: 0 0 12px var(--sys-cyan-glow); }
 .hl-rank { color: var(--rank-color); text-shadow: 0 0 12px var(--rank-glow); }
+
+/* Module 3: debuff flicker, gold shimmer, crack overlay */
+@keyframes debuffFlicker {
+  0%, 100% { opacity: 1; filter: none; }
+  47%      { opacity: 0.94; filter: none; }
+  50%      { opacity: 0.72; filter: hue-rotate(-12deg) saturate(1.1); }
+  53%      { opacity: 0.96; }
+}
+.stat-debuffed { animation: debuffFlicker 3.6s ease-in-out infinite; }
+
+@keyframes goldShimmer {
+  0%, 100% { filter: brightness(1) drop-shadow(0 0 10px rgba(255,215,106,0.55)); }
+  50%      { filter: brightness(1.25) drop-shadow(0 0 22px rgba(255,215,106,0.9)); }
+}
+.gold-shimmer { animation: goldShimmer 2.4s ease-in-out infinite; }
+
+@keyframes crackGlow {
+  0%, 100% { opacity: 0.85; }
+  50%      { opacity: 1; }
+}
+.crack-overlay {
+  position: fixed; inset: 0; z-index: 70; pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, rgba(120,5,5,0.25), rgba(20,0,0,0.92) 70%),
+    repeating-linear-gradient(40deg, rgba(239,68,68,0.12) 0 2px, transparent 2px 12px);
+  animation: crackGlow 2s ease-in-out infinite;
+}
+.crack-overlay::before {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(115deg, transparent 48%, rgba(255,0,0,0.35) 49%, transparent 50%),
+    linear-gradient(60deg, transparent 46%, rgba(255,0,0,0.25) 47%, transparent 48%),
+    linear-gradient(150deg, transparent 52%, rgba(255,0,0,0.3) 53%, transparent 54%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+@keyframes boxRise {
+  0%   { transform: translateY(24px) scale(0.92); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.box-rise { animation: boxRise 600ms var(--ease-out) both; }
+
+@keyframes boxShatter {
+  0%   { transform: scale(1); filter: brightness(1); }
+  40%  { transform: scale(1.18); filter: brightness(2); }
+  100% { transform: scale(3.6); filter: brightness(0.2); opacity: 0; }
+}
+.box-shatter { animation: boxShatter 900ms ease-out both; }
+
+@keyframes radarGold {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(255,215,106,0.6)) saturate(1); }
+  50%      { filter: drop-shadow(0 0 22px rgba(255,215,106,1)) saturate(1.4); }
+}
+.radar-allstat { animation: radarGold 2.6s ease-in-out infinite; }

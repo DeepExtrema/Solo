@@ -6,6 +6,8 @@ import { RANKS, rankFromXP, nextRank } from '../data/ranks.js'
 import { DAILY_QUESTS, MAIN_QUESTS } from '../data/quests.js'
 import { NODES } from '../data/skillTree.js'
 import XPBar from '../components/XPBar.jsx'
+import FatigueBadge from '../components/FatigueBadge.jsx'
+import InstanceDungeonCard from '../components/InstanceDungeonCard.jsx'
 
 const DIFF_COLOR = {
   Easy: 'var(--rank-d)',
@@ -16,6 +18,8 @@ const DIFF_COLOR = {
 export default function StatusPanel() {
   const { state, rank, completeDaily } = useStore()
   const { raw, status } = useStats()
+  const flags = state.featureFlags || {}
+  const showDungeonCard = flags.INSTANCE_DUNGEONS_ENABLED && state.activeDungeon
   const daily = raw?.leetcode?.daily
   const next = nextRank(rank.key)
   const activeMain = MAIN_QUESTS.find(q => !state.completedQuests.includes(q.id))
@@ -27,6 +31,7 @@ export default function StatusPanel() {
 
   return (
     <div className="col">
+      {showDungeonCard && <InstanceDungeonCard />}
       {/* HERO */}
       <section className="panel" style={{ overflow: 'hidden' }}>
         <div className="panel-title">
@@ -77,6 +82,11 @@ export default function StatusPanel() {
               <div style={{ fontStyle: 'italic', color: 'var(--text-secondary)', marginTop: 6, fontSize: 12 }}>
                 "{rank.subtitle}"
               </div>
+              {flags.SLEEP_PROTOCOL_ENABLED && state.fatigue >= 50 && (
+                <div style={{ marginTop: 10 }}>
+                  <FatigueBadge fatigue={state.fatigue} />
+                </div>
+              )}
               <div style={{ marginTop: 10, fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.6, maxWidth: 560 }}>
                 {rank.lore}
               </div>

@@ -4,7 +4,8 @@ export const DAILY_QUESTS = [
   { id: 'd1', name: 'LEETCODE :: 1 PROBLEM', desc: 'Solve a minimum of one problem. Easy counts.',           xp: 15 },
   { id: 'd2', name: 'APPLY :: 1 GATE',        desc: 'Send one job application. Any target.',                  xp: 20 },
   { id: 'd3', name: 'PARALLAX :: 1 ACTION',   desc: 'Customer call, deck update, or research tick.',          xp: 15 },
-  { id: 'd4', name: 'STUDY :: 1 CONCEPT',     desc: 'Review or practice a robotics/ML concept.',              xp: 10 }
+  { id: 'd4', name: 'STUDY :: 1 CONCEPT',     desc: 'Review or practice a robotics/ML concept.',              xp: 10 },
+  { id: 'd5', name: 'REST PROTOCOL',          desc: 'Sleep at least 7 hours. Recovery is not optional.',      xp: 20, autoSleep: true }
 ]
 
 export const MAIN_QUESTS = [

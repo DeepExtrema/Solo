@@ -5,12 +5,20 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   buildAuthUrl, exchangeCodeForTokens, isConnected, clearTokens,
-  fetchFitbitStats, fetchFitbitSeries, getCredentials, saveCredentials
+  fetchFitbitStats, fetchFitbitSeries, fetchFitbitSleep,
+  getCredentials, saveCredentials
 } from './fitbit.js'
 import {
   fetchLeetcodeStats, invalidateLeetcodeCache, getUsername
 } from './leetcode.js'
 import { logError } from './log.js'
+import {
+  loadHunterState, saveHunterState,
+  recordSleepNight, listSleepNights,
+  recordQuestEvent, listQuestEvents,
+  recordJournalEntry, listJournalEntries,
+  supabaseEnabled
+} from './db.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PORT = Number(process.env.PORT || 3001)
@@ -35,6 +43,7 @@ app.get('/api/health', (req, res) => {
       configured: !!getUsername(),
       username: getUsername() || null
     },
+    supabase: { enabled: supabaseEnabled() },
     serverTime: new Date().toISOString()
   })
 })
@@ -119,6 +128,92 @@ app.get('/api/stats', async (req, res) => {
 app.get('/api/fitbit/series', async (req, res) => {
   try { res.json(await fetchFitbitSeries()) }
   catch (e) { logError('series', e); res.status(500).json({ error: e.message }) }
+})
+
+app.get('/api/sleep', async (req, res) => {
+  try { res.json(await fetchFitbitSleep()) }
+  catch (e) { logError('sleep', e); res.status(500).json({ connected: false, error: e.message }) }
+})
+
+// ---- Persistence (Supabase) ----
+// If Supabase isn't configured, these return 503 so the client can fall back
+// to localStorage-only mode without breaking.
+
+function requireSupabase(res) {
+  if (supabaseEnabled()) return true
+  res.status(503).json({ error: 'supabase_not_configured' })
+  return false
+}
+
+app.get('/api/state', async (req, res) => {
+  if (!requireSupabase(res)) return
+  try {
+    const row = await loadHunterState()
+    res.json(row || { state: null })
+  } catch (e) { logError('GET /api/state', e); res.status(500).json({ error: e.message }) }
+})
+
+app.put('/api/state', async (req, res) => {
+  if (!requireSupabase(res)) return
+  try {
+    const state = req.body?.state
+    if (!state || typeof state !== 'object') {
+      return res.status(400).json({ error: 'body.state must be an object' })
+    }
+    const r = await saveHunterState(state)
+    res.json(r)
+  } catch (e) { logError('PUT /api/state', e); res.status(500).json({ error: e.message }) }
+})
+
+app.get('/api/sleep-nights', async (req, res) => {
+  if (!requireSupabase(res)) return
+  try {
+    const limit = Math.min(365, Number(req.query.limit) || 30)
+    res.json({ rows: await listSleepNights(limit) })
+  } catch (e) { logError('GET /api/sleep-nights', e); res.status(500).json({ error: e.message }) }
+})
+
+app.post('/api/sleep-nights', async (req, res) => {
+  if (!requireSupabase(res)) return
+  try {
+    const night = req.body?.night
+    if (!night?.date) return res.status(400).json({ error: 'body.night.date required' })
+    res.json(await recordSleepNight(night))
+  } catch (e) { logError('POST /api/sleep-nights', e); res.status(500).json({ error: e.message }) }
+})
+
+app.get('/api/quest-events', async (req, res) => {
+  if (!requireSupabase(res)) return
+  try {
+    const limit = Math.min(500, Number(req.query.limit) || 100)
+    res.json({ rows: await listQuestEvents(limit) })
+  } catch (e) { logError('GET /api/quest-events', e); res.status(500).json({ error: e.message }) }
+})
+
+app.post('/api/quest-events', async (req, res) => {
+  if (!requireSupabase(res)) return
+  try {
+    const evt = req.body?.event
+    if (!evt?.kind) return res.status(400).json({ error: 'body.event.kind required' })
+    res.json(await recordQuestEvent(evt))
+  } catch (e) { logError('POST /api/quest-events', e); res.status(500).json({ error: e.message }) }
+})
+
+app.get('/api/journal', async (req, res) => {
+  if (!requireSupabase(res)) return
+  try {
+    const limit = Math.min(500, Number(req.query.limit) || 200)
+    res.json({ rows: await listJournalEntries(limit) })
+  } catch (e) { logError('GET /api/journal', e); res.status(500).json({ error: e.message }) }
+})
+
+app.post('/api/journal', async (req, res) => {
+  if (!requireSupabase(res)) return
+  try {
+    const entry = req.body?.entry
+    if (!entry) return res.status(400).json({ error: 'body.entry required' })
+    res.json(await recordJournalEntry(entry))
+  } catch (e) { logError('POST /api/journal', e); res.status(500).json({ error: e.message }) }
 })
 
 app.post('/api/stats/force-sync', async (req, res) => {

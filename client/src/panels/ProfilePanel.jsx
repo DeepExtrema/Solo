@@ -9,10 +9,14 @@ import { STAT_KEYS, STATS } from '../data/stats.js'
 import StatBar from '../components/StatBar.jsx'
 import StatRadar from '../components/StatRadar.jsx'
 import StatDetailDrawer from '../components/StatDetailDrawer.jsx'
+import FatigueBadge from '../components/FatigueBadge.jsx'
+import { CLASSES } from '../data/classes.js'
 
 export default function ProfilePanel() {
   const { state, rank, equipTitle, setName, resetAll } = useStore()
-  const { stats, trends, raw, status } = useStats()
+  const { stats, trends, raw, status, debuffByStat } = useStats()
+  const flags = state.featureFlags || {}
+  const cls = state.classKey ? CLASSES[state.classKey] : null
   const [nameEdit, setNameEdit] = useState(state.hunterName)
   const [confirmReset, setConfirmReset] = useState(false)
   const [drawerStat, setDrawerStat] = useState(null)
@@ -66,8 +70,40 @@ export default function ProfilePanel() {
               />
               <button onClick={() => setName(nameEdit)}>SAVE</button>
             </div>
-            <div style={{ fontSize: 12, color: 'var(--rank-color)', letterSpacing: '0.15em', marginBottom: 12 }}>
+            <div style={{ fontSize: 12, color: 'var(--rank-color)', letterSpacing: '0.15em', marginBottom: 8 }}>
               {rank.title} :: {rank.subtitle}
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+              {cls && (
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '4px 10px',
+                  border: `1px solid ${cls.color}`,
+                  color: cls.color,
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 10, letterSpacing: '0.22em',
+                  textShadow: `0 0 10px ${cls.color}`,
+                  background: 'rgba(0,0,0,0.4)'
+                }}>
+                  ◆ CLASS :: {cls.key}
+                </div>
+              )}
+              {state.allStatUnlocked && (
+                <div className="gold-shimmer" style={{
+                  padding: '4px 10px',
+                  border: '1px solid var(--legendary)',
+                  color: 'var(--legendary)',
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 10, letterSpacing: '0.22em',
+                  textShadow: '0 0 12px var(--legendary-glow)',
+                  background: 'rgba(255,215,106,0.06)'
+                }}>
+                  ◆ ALL-STAT PLAYER
+                </div>
+              )}
+              {flags.SLEEP_PROTOCOL_ENABLED && state.fatigue >= 50 && (
+                <FatigueBadge fatigue={state.fatigue} />
+              )}
             </div>
             <div style={{ fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.7, fontStyle: 'italic', maxWidth: 560 }}>
               {rank.lore}
@@ -94,7 +130,7 @@ export default function ProfilePanel() {
           </span>
         </div>
         <div className="panel-body" style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: 20, alignItems: 'center' }}>
-          <div style={{ display: 'grid', placeItems: 'center' }}>
+          <div style={{ display: 'grid', placeItems: 'center' }} className={state.allStatUnlocked ? 'radar-allstat' : ''}>
             <StatRadar stats={stats} size={280} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -109,6 +145,7 @@ export default function ProfilePanel() {
                   value={stats[k]}
                   trend={trends[k]}
                   source={source}
+                  debuffs={debuffByStat?.[k]}
                   onClick={() => setDrawerStat(k)}
                 />
               )

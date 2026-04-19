@@ -1,10 +1,13 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { computeStats } from '../data/stats.js'
+import { applyDebuffs, computeStats, isAllStatPlayer } from '../data/stats.js'
+import { computeRecoveryScore, debuffsForScore, fatigueDelta } from '../data/sleep.js'
 import { apiUrl } from '../lib/apiBase.js'
+import { useStore } from './store.jsx'
 
-const POLL_MS = 15 * 60 * 1000 // 15 minutes
+const POLL_MS = 15 * 60 * 1000
+const SLEEP_POLL_MS = 30 * 60 * 1000
 const YESTERDAY_KEY = 'parallax-gate::stats-yesterday'
-const STALE_MS = 30 * 60 * 1000 // after 30 min without a successful sync, show yellow
+const STALE_MS = 30 * 60 * 1000
 
 const StatsCtx = createContext(null)
 
@@ -16,10 +19,12 @@ function writeYesterday(obj) {
 }
 
 export function StatsProvider({ chaBonus = 0, children, onAutoQuest }) {
+  const { state: gameState, applySleepNight, unlockAllStat } = useStore()
   const [raw, setRaw]           = useState({ fitbit: null, leetcode: null })
+  const [sleep, setSleep]       = useState(null)
   const [health, setHealth]     = useState(null)
   const [lastSync, setLastSync] = useState(null)
-  const [status, setStatus]     = useState('idle') // idle | loading | ok | stale | offline
+  const [status, setStatus]     = useState('idle')
   const onAutoQuestRef = useRef(onAutoQuest)
   useEffect(() => { onAutoQuestRef.current = onAutoQuest }, [onAutoQuest])
 
@@ -54,6 +59,18 @@ export function StatsProvider({ chaBonus = 0, children, onAutoQuest }) {
     }
   }, [])
 
+  const refreshSleep = useCallback(async () => {
+    try {
+      const r = await fetch(apiUrl('/api/sleep'))
+      if (!r.ok) throw new Error('sleep ' + r.status)
+      const j = await r.json()
+      setSleep(j)
+      return j
+    } catch {
+      return null
+    }
+  }, [])
+
   function triggerAutoQuests(j) {
     const cb = onAutoQuestRef.current
     if (!cb) return
@@ -64,22 +81,36 @@ export function StatsProvider({ chaBonus = 0, children, onAutoQuest }) {
   useEffect(() => {
     refreshHealth()
     refreshStats(false)
-    const t = setInterval(() => refreshStats(false), POLL_MS)
-    return () => clearInterval(t)
-  }, [refreshHealth, refreshStats])
+    refreshSleep()
+    const t1 = setInterval(() => refreshStats(false), POLL_MS)
+    const t2 = setInterval(refreshSleep, SLEEP_POLL_MS)
+    return () => { clearInterval(t1); clearInterval(t2) }
+  }, [refreshHealth, refreshStats, refreshSleep])
 
-  // Persist yesterday for trend
+  // Apply nightly sleep score / debuffs once per date
+  useEffect(() => {
+    if (!sleep?.connected || !sleep.tonight || !sleep.tonight.recorded) return
+    const night = sleep.tonight
+    const { score } = computeRecoveryScore(night, gameState.sleepSchedule)
+    if (gameState.lastSleepApplied === night.date) return
+
+    const debuffs = gameState.featureFlags.SLEEP_PROTOCOL_ENABLED ? debuffsForScore(score) : []
+    const fDelta  = gameState.featureFlags.SLEEP_PROTOCOL_ENABLED ? fatigueDelta(score)  : 0
+    applySleepNight({ night, score, debuffs, fatigueDelta: fDelta })
+
+    if ((night.totalMinutesAsleep ?? 0) >= 420) {
+      const cb = onAutoQuestRef.current
+      if (cb) cb('d5', { bonusXp: score >= 75 ? 10 : 0 })
+    }
+  }, [sleep, gameState.sleepSchedule, gameState.lastSleepApplied, gameState.featureFlags.SLEEP_PROTOCOL_ENABLED, applySleepNight])
+
+  // Persist yesterday snapshot
   useEffect(() => {
     if (status !== 'ok' || !raw?.fitbit) return
     const today = new Date().toISOString().slice(0, 10)
     const prev = readYesterday()
     if (!prev || prev.date !== today) {
-      // Rotate: make "today" into "yesterday" at day boundary, but only after at least one successful fetch
-      if (prev && prev.date) {
-        // Keep prev as yesterday reference
-      } else {
-        writeYesterday({ date: today, stats: computeStats({ ...raw, chaBonus }) })
-      }
+      if (!prev) writeYesterday({ date: today, stats: computeStats({ ...raw, chaBonus }) })
     }
   }, [raw, chaBonus, status])
 
@@ -93,7 +124,24 @@ export function StatsProvider({ chaBonus = 0, children, onAutoQuest }) {
     return () => clearInterval(t)
   }, [lastSync])
 
-  const stats    = useMemo(() => computeStats({ ...raw, chaBonus }), [raw, chaBonus])
+  const baseStats = useMemo(() => computeStats({ ...raw, chaBonus }), [raw, chaBonus])
+
+  const damper = gameState.classKey === 'IRON' ? { stats: ['STR', 'VIT'], factor: 0.5 } : null
+  const { stats: debuffed, byStat: debuffByStat } = useMemo(
+    () => applyDebuffs(baseStats, gameState.debuffs || [], damper),
+    [baseStats, gameState.debuffs, damper]
+  )
+  const stats = useMemo(() => {
+    const boost = gameState.inventory?.tokens?.statBoost
+    if (!boost || boost.expiresAt < Date.now()) return debuffed
+    return { ...debuffed, [boost.stat]: Math.min(100, (debuffed[boost.stat] ?? 0) + boost.amount) }
+  }, [debuffed, gameState.inventory?.tokens?.statBoost])
+
+  // All-Stat Hunter detection
+  useEffect(() => {
+    if (!gameState.allStatUnlocked && isAllStatPlayer(stats, 60)) unlockAllStat()
+  }, [stats, gameState.allStatUnlocked, unlockAllStat])
+
   const yesterday = readYesterday()
   const trends = useMemo(() => {
     if (!yesterday?.stats) return {}
@@ -106,11 +154,12 @@ export function StatsProvider({ chaBonus = 0, children, onAutoQuest }) {
   }, [stats, yesterday])
 
   const api = useMemo(() => ({
-    raw, stats, trends,
+    raw, baseStats, stats, debuffByStat, trends,
+    sleep, refreshSleep,
     health, refreshHealth,
     status, lastSync,
     refresh: (force = true) => refreshStats(force)
-  }), [raw, stats, trends, health, status, lastSync, refreshHealth, refreshStats])
+  }), [raw, baseStats, stats, debuffByStat, trends, sleep, refreshSleep, health, status, lastSync, refreshHealth, refreshStats])
 
   return <StatsCtx.Provider value={api}>{children}</StatsCtx.Provider>
 }

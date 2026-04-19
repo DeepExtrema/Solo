@@ -4,11 +4,12 @@ import { rankProgress } from '../data/ranks.js'
 
 const TABS = [
   { key: 'STATUS',    label: 'STATUS',      idx: '01' },
-  { key: 'SKILLTREE', label: 'SKILL TREE',  idx: '02' },
-  { key: 'QUESTS',    label: 'QUEST LOG',   idx: '03' },
-  { key: 'JOURNAL',   label: 'LORE',        idx: '04' },
-  { key: 'PROFILE',   label: 'HUNTER',      idx: '05' },
-  { key: 'CONFIG',    label: 'SYSTEM CFG',  idx: '06' }
+  { key: 'RECOVERY',  label: 'RECOVERY',    idx: '02' },
+  { key: 'SKILLTREE', label: 'SKILL TREE',  idx: '03' },
+  { key: 'QUESTS',    label: 'QUEST LOG',   idx: '04' },
+  { key: 'JOURNAL',   label: 'LORE',        idx: '05' },
+  { key: 'PROFILE',   label: 'HUNTER',      idx: '06' },
+  { key: 'CONFIG',    label: 'SYSTEM CFG',  idx: '07' }
 ]
 
 export default function Sidebar({ tab, setTab }) {

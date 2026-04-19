@@ -8,10 +8,16 @@ import QuestLogPanel from './panels/QuestLogPanel.jsx'
 import JournalPanel from './panels/JournalPanel.jsx'
 import ProfilePanel from './panels/ProfilePanel.jsx'
 import ConfigPanel from './panels/ConfigPanel.jsx'
+import RecoveryPanel from './panels/RecoveryPanel.jsx'
 import Ceremony from './components/Ceremony.jsx'
 import Runes from './components/Runes.jsx'
 import TopBar from './components/TopBar.jsx'
 import BiometricWidget from './components/BiometricWidget.jsx'
+import RewardBoxOverlay from './components/RewardBoxOverlay.jsx'
+import FatigueDebuffOverlay from './components/FatigueDebuffOverlay.jsx'
+import RecoveryDungeonOverlay from './components/RecoveryDungeonOverlay.jsx'
+import JobChangeOverlay from './components/JobChangeOverlay.jsx'
+import BedtimeReminder from './components/BedtimeReminder.jsx'
 import { CHA_QUESTS } from './data/stats.js'
 import './styles/layout.css'
 
@@ -28,7 +34,7 @@ function Shell() {
   return (
     <StatsProvider
       chaBonus={chaBonus}
-      onAutoQuest={(qid) => { if (!state.dailyProgress[qid]) completeDaily(qid) }}
+      onAutoQuest={(qid, opts) => { if (!state.dailyProgress[qid]) completeDaily(qid, opts) }}
     >
       <div className="shell">
         <Runes />
@@ -37,6 +43,7 @@ function Shell() {
           <Sidebar tab={tab} setTab={setTab} />
           <main className="main">
             {tab === 'STATUS'    && <StatusPanel />}
+            {tab === 'RECOVERY'  && <RecoveryPanel />}
             {tab === 'SKILLTREE' && <SkillTreePanel />}
             {tab === 'QUESTS'    && <QuestLogPanel />}
             {tab === 'JOURNAL'   && <JournalPanel />}
@@ -46,6 +53,11 @@ function Shell() {
         </div>
         {tab !== 'CONFIG' && <BiometricWidget />}
         {ceremony && <Ceremony ceremony={ceremony} dismiss={dismissCeremony} />}
+        <RewardBoxOverlay />
+        <FatigueDebuffOverlay />
+        <RecoveryDungeonOverlay />
+        <JobChangeOverlay />
+        <BedtimeReminder />
       </div>
     </StatsProvider>
   )
