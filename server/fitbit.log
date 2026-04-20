@@ -2572,3 +2572,183 @@
 [2026-04-20T04:53:17.315Z] readiness FAILED :: 404 Fitbit 404: {"errors":[{"errorType":"not_found","fieldName":"n/a","message":"The API you are requesting could not be found."}],"success":fal
 [2026-04-20T04:53:17.335Z] cardioscore FAILED :: 403 Fitbit 403: This application does not have permission to READ CARDIO_FITNESS data. Visit https://dev.fitbit.com/docs/oauth2 for more informa
 [2026-04-20T04:53:17.336Z] STATS :: steps=7 azm=0 active=0 floors=0 rhr=? hrv=? br=? spo2=? readiness=? sleep=0m deep=0m rem=0m eff=?%
+[2026-04-20T04:53:38.582Z] SLEEP_PARSE: no sleep records for date=2026-04-20
+[2026-04-20T04:53:38.631Z] br FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T04:53:38.632Z] spo2 FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T04:53:38.676Z] readiness FAILED :: 404 Fitbit 404: {"errors":[{"errorType":"not_found","fieldName":"n/a","message":"The API you are requesting could not be found."}],"success":fal
+[2026-04-20T04:53:38.727Z] cardioscore FAILED :: 403 Fitbit 403: This application does not have permission to READ CARDIO_FITNESS data. Visit https://dev.fitbit.com/docs/oauth2 for more informa
+[2026-04-20T04:53:38.727Z] STATS :: steps=7 azm=0 active=0 floors=0 rhr=? hrv=? br=? spo2=? readiness=? sleep=0m deep=0m rem=0m eff=?%
+[2026-04-20T04:53:38.871Z] SLEEP_PARSE: no sleep records for date=2026-04-20
+[2026-04-20T04:53:38.926Z] br FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T04:53:38.942Z] spo2 FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T04:53:38.967Z] cardioscore FAILED :: 403 Fitbit 403: This application does not have permission to READ CARDIO_FITNESS data. Visit https://dev.fitbit.com/docs/oauth2 for more informa
+[2026-04-20T04:53:39.006Z] readiness FAILED :: 404 Fitbit 404: {"errors":[{"errorType":"not_found","fieldName":"n/a","message":"The API you are requesting could not be found."}],"success":fal
+[2026-04-20T04:53:39.006Z] STATS :: steps=7 azm=0 active=0 floors=0 rhr=? hrv=? br=? spo2=? readiness=? sleep=0m deep=0m rem=0m eff=?%
+[2026-04-20T04:53:39.022Z] SLEEP_PARSE: no sleep records for date=2026-04-20
+[2026-04-20T04:53:39.076Z] br FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T04:53:39.081Z] spo2 FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T04:53:39.121Z] readiness FAILED :: 404 Fitbit 404: {"errors":[{"errorType":"not_found","fieldName":"n/a","message":"The API you are requesting could not be found."}],"success":fal
+[2026-04-20T04:53:39.131Z] cardioscore FAILED :: 403 Fitbit 403: This application does not have permission to READ CARDIO_FITNESS data. Visit https://dev.fitbit.com/docs/oauth2 for more informa
+[2026-04-20T04:53:39.132Z] STATS :: steps=7 azm=0 active=0 floors=0 rhr=? hrv=? br=? spo2=? readiness=? sleep=0m deep=0m rem=0m eff=?%
+[2026-04-20T04:53:40.067Z] SLEEP_PARSE: no sleep records for date=2026-04-20
+[2026-04-20T04:53:40.121Z] br FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T04:53:40.121Z] spo2 FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T04:53:40.166Z] readiness FAILED :: 404 Fitbit 404: {"errors":[{"errorType":"not_found","fieldName":"n/a","message":"The API you are requesting could not be found."}],"success":fal
+[2026-04-20T04:53:40.171Z] cardioscore FAILED :: 403 Fitbit 403: This application does not have permission to READ CARDIO_FITNESS data. Visit https://dev.fitbit.com/docs/oauth2 for more informa
+[2026-04-20T04:53:40.171Z] STATS :: steps=7 azm=0 active=0 floors=0 rhr=? hrv=? br=? spo2=? readiness=? sleep=0m deep=0m rem=0m eff=?%
+[2026-04-20T04:53:40.608Z] SLEEP_PARSE: no sleep records for date=2026-04-20
+[2026-04-20T04:53:40.660Z] br FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T04:53:40.662Z] spo2 FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T04:53:40.716Z] cardioscore FAILED :: 403 Fitbit 403: This application does not have permission to READ CARDIO_FITNESS data. Visit https://dev.fitbit.com/docs/oauth2 for more informa
+[2026-04-20T04:53:40.926Z] readiness FAILED :: 404 Fitbit 404: {"errors":[{"errorType":"not_found","fieldName":"n/a","message":"The API you are requesting could not be found."}],"success":fal
+[2026-04-20T04:53:40.927Z] STATS :: steps=7 azm=0 active=0 floors=0 rhr=? hrv=? br=? spo2=? readiness=? sleep=0m deep=0m rem=0m eff=?%
+[2026-04-20T04:53:59.239Z] SLEEP_PARSE: no sleep records for date=2026-04-20
+[2026-04-20T04:53:59.292Z] spo2 FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T04:53:59.293Z] br FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T04:53:59.323Z] readiness FAILED :: 404 Fitbit 404: {"errors":[{"errorType":"not_found","fieldName":"n/a","message":"The API you are requesting could not be found."}],"success":fal
+[2026-04-20T04:53:59.402Z] cardioscore FAILED :: 403 Fitbit 403: This application does not have permission to READ CARDIO_FITNESS data. Visit https://dev.fitbit.com/docs/oauth2 for more informa
+[2026-04-20T04:53:59.402Z] STATS :: steps=7 azm=0 active=0 floors=0 rhr=? hrv=? br=? spo2=? readiness=? sleep=0m deep=0m rem=0m eff=?%
+[2026-04-20T04:53:59.929Z] SLEEP_PARSE: no sleep records for date=2026-04-20
+[2026-04-20T04:53:59.972Z] br FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T04:53:59.982Z] spo2 FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T04:54:00.037Z] cardioscore FAILED :: 403 Fitbit 403: This application does not have permission to READ CARDIO_FITNESS data. Visit https://dev.fitbit.com/docs/oauth2 for more informa
+[2026-04-20T04:54:00.038Z] readiness FAILED :: 404 Fitbit 404: {"errors":[{"errorType":"not_found","fieldName":"n/a","message":"The API you are requesting could not be found."}],"success":fal
+[2026-04-20T04:54:00.087Z] STATS :: steps=7 azm=0 active=0 floors=0 rhr=? hrv=? br=? spo2=? readiness=? sleep=0m deep=0m rem=0m eff=?%
+[2026-04-20T05:08:01.137Z] SLEEP_PARSE: no sleep records for date=2026-04-20
+[2026-04-20T05:08:01.192Z] br FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T05:08:01.202Z] spo2 FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T05:08:01.296Z] readiness FAILED :: 404 Fitbit 404: {"errors":[{"errorType":"not_found","fieldName":"n/a","message":"The API you are requesting could not be found."}],"success":fal
+[2026-04-20T05:08:01.321Z] cardioscore FAILED :: 403 Fitbit 403: This application does not have permission to READ CARDIO_FITNESS data. Visit https://dev.fitbit.com/docs/oauth2 for more informa
+[2026-04-20T05:08:01.322Z] STATS :: steps=7 azm=0 active=0 floors=0 rhr=? hrv=? br=? spo2=? readiness=? sleep=0m deep=0m rem=0m eff=?%
+[2026-04-20T05:09:00.067Z] SLEEP_PARSE: no sleep records for date=2026-04-20
+[2026-04-20T05:09:00.126Z] br FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T05:09:00.128Z] spo2 FAILED :: 403 Fitbit 403: {
+  "error": {
+    "code": 403,
+    "message": "The caller does not have permission",
+    "status": "PERMISSION_DENIED"
+  }
+}
+
+[2026-04-20T05:09:00.236Z] cardioscore FAILED :: 403 Fitbit 403: This application does not have permission to READ CARDIO_FITNESS data. Visit https://dev.fitbit.com/docs/oauth2 for more informa
+[2026-04-20T05:09:00.240Z] readiness FAILED :: 404 Fitbit 404: {"errors":[{"errorType":"not_found","fieldName":"n/a","message":"The API you are requesting could not be found."}],"success":fal
+[2026-04-20T05:09:00.241Z] STATS :: steps=7 azm=0 active=0 floors=0 rhr=? hrv=? br=? spo2=? readiness=? sleep=0m deep=0m rem=0m eff=?%
