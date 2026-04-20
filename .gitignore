@@ -7,3 +7,4 @@ server/credentials.json
 server/error.log
 .DS_Store
 .vite/
+.gstack/

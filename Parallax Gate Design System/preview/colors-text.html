@@ -1,0 +1,19 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Text Colors</title>
+<link rel="stylesheet" href="_card.css"></head>
+<body>
+<main class="card-root">
+  <div style="display:flex; flex-direction:column; gap:6px;">
+    <div style="color:#d9e5ff; font-family:var(--font-mono); font-size:14px">PRIMARY — the body of the System message that reaches the Hunter.</div>
+    <div style="color:#8896b5; font-family:var(--font-mono); font-size:12px; letter-spacing:0.2em; text-transform:uppercase">SECONDARY // META, LABELS, STATUS PILLS</div>
+    <div style="color:#4a5475; font-family:var(--font-mono); font-size:11px; letter-spacing:0.25em; text-transform:uppercase">MUTED :: TICKS, PLACEHOLDER, TIMESTAMPS</div>
+    <div style="color:#2a3148; font-family:var(--font-mono); font-size:10px; letter-spacing:0.25em; text-transform:uppercase">FAINT :: INACTIVE GRID, DISABLED</div>
+  </div>
+  <div style="margin-top:16px; display:grid; grid-template-columns: repeat(4, 1fr); gap:8px;">
+    <div class="swatch" style="background:#d9e5ff"><span class="tok" style="color:#05060a">--text-primary</span><span class="hex" style="color:#222">#d9e5ff</span></div>
+    <div class="swatch" style="background:#8896b5"><span class="tok" style="color:#0a0a0f">--text-secondary</span><span class="hex" style="color:rgba(0,0,0,0.55)">#8896b5</span></div>
+    <div class="swatch" style="background:#4a5475"><span class="tok">--text-muted</span><span class="hex" style="color:rgba(255,255,255,0.5)">#4a5475</span></div>
+    <div class="swatch" style="background:#2a3148"><span class="tok" style="color:#8896b5">--text-faint</span><span class="hex" style="color:#4a5475">#2a3148</span></div>
+  </div>
+</main>
+</body></html>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80">
+  <defs>
+    <filter id="g" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="b"></feGaussianBlur>
+      <feMerge><feMergeNode in="b"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+    </filter>
+  </defs>
+  <rect width="80" height="80" fill="#05060a"></rect>
+  <rect x="8" y="8" width="64" height="64" fill="none" stroke="#5ee1ff" stroke-width="1.5" filter="url(#g)"></rect>
+  <text x="40" y="52" text-anchor="middle" font-family="Orbitron, monospace" font-weight="900" font-size="34" letter-spacing="2" fill="#5ee1ff" filter="url(#g)">PG</text>
+</svg>

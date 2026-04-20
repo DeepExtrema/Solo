@@ -1,0 +1,44 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Stat Bar</title>
+<link rel="stylesheet" href="_card.css">
+<style>
+  @keyframes shim { 0%{ background-position:-200% 0;} 100%{ background-position:200% 0;} }
+  .statbar { padding:12px; background:rgba(0,0,0,0.35); transition:all 200ms var(--ease-out); }
+  .statbar .name { font-family:var(--font-display); font-weight:800; letter-spacing:0.2em; font-size:14px; }
+  .statbar .track { flex:1; height:10px; background:rgba(0,0,0,0.6); border:1px solid rgba(80,120,200,0.15); position:relative; }
+  .statbar .fill { height:100%; background-size:200% 100%; animation: shim 2.4s linear infinite; }
+  .num { font-family:var(--font-display); font-size:28px; font-weight:900; min-width:54px; text-align:right; }
+</style>
+</head>
+<body>
+<main class="card-root">
+  <div class="col" style="gap:10px;">
+    <!-- HIGH -->
+    <div class="statbar" style="border:1px solid #ef4444; box-shadow:0 0 18px rgba(239,68,68,0.75);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <div><span class="name" style="color:#ef4444; text-shadow:0 0 10px rgba(239,68,68,0.75);">STRENGTH</span>
+          <span style="color:#4a5475; margin-left:8px; font-size:9px; letter-spacing:0.25em;">PHYSICAL CONDITIONING</span></div>
+        <span class="chip" style="color:#4ade80; border-color:#4ade80;">FITBIT LIVE</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="num" style="color:#ef4444; text-shadow:0 0 14px rgba(239,68,68,0.75);">87</div>
+        <div class="track"><div class="fill" style="width:87%; background:linear-gradient(90deg,#ef4444,rgba(255,255,255,0.5),#ef4444); box-shadow:0 0 14px rgba(239,68,68,0.75);"></div></div>
+        <div style="color:#4a5475; font-size:10px; letter-spacing:0.2em; min-width:36px; text-align:right;">/ 100</div>
+      </div>
+    </div>
+    <!-- MID -->
+    <div class="statbar" style="border:1px solid rgba(100,180,255,0.3);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <div><span class="name" style="color:#3b82f6;">INTELLIGENCE</span>
+          <span style="color:#4a5475; margin-left:8px; font-size:9px; letter-spacing:0.25em;">TECHNICAL COMBAT POWER</span></div>
+        <span class="chip" style="color:#4ade80; border-color:#4ade80;">LEETCODE LIVE</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="num" style="color:#3b82f6;">54</div>
+        <div class="track"><div class="fill" style="width:54%; background:linear-gradient(90deg,#3b82f6,rgba(255,255,255,0.4),#3b82f6);"></div></div>
+        <div style="color:#4a5475; font-size:10px; letter-spacing:0.2em; min-width:36px; text-align:right;">/ 100</div>
+      </div>
+    </div>
+  </div>
+</main>
+</body></html>

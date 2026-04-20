@@ -1,0 +1,141 @@
+/* =========================================================
+   PARALLAX GATE :: Dark Fantasy System — Colors & Type
+   Source: client/src/styles/theme.css + global.css
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@500;700;900&display=swap');
+
+:root {
+  /* ---------- BASE BACKGROUND PALETTE (void → elevated) ---------- */
+  --bg-void:      #05060a;   /* page background, behind everything */
+  --bg-deep:      #0a0a0f;   /* topbar + sidebar tinted-black */
+  --bg-panel:     #0d0f18;   /* panel top */
+  --bg-panel-2:   #121524;   /* panel bottom (subtle vertical gradient) */
+  --bg-elevated:  #161a2b;   /* hover / modals / elevated surfaces */
+
+  /* ---------- BORDERS (cool blue glow hierarchy) ---------- */
+  --border-dim:   rgba(80, 120, 200, 0.15);   /* default panel edge */
+  --border-mid:   rgba(100, 180, 255, 0.30);  /* interactive edge */
+  --border-hot:   rgba(120, 220, 255, 0.60);  /* hover / active edge */
+
+  /* ---------- TEXT (cool near-white → faint) ---------- */
+  --text-primary:    #d9e5ff;   /* body */
+  --text-secondary:  #8896b5;   /* labels / meta */
+  --text-muted:      #4a5475;   /* ticks / placeholder */
+  --text-faint:      #2a3148;   /* inactive grid lines */
+
+  /* ---------- SYSTEM CYAN (neutral "the System speaks" glow) ---------- */
+  --sys-cyan:       #5ee1ff;
+  --sys-cyan-dim:   #2a8db0;
+  --sys-cyan-glow:  rgba(94, 225, 255, 0.55);
+
+  /* ---------- RANK SPECTRUM (E → S, cold → hot) ---------- */
+  --rank-e: #8a8a98;  --rank-e-glow: rgba(138, 138, 152, 0.55);  /* ash */
+  --rank-d: #4ade80;  --rank-d-glow: rgba(74, 222, 128, 0.55);   /* viridian */
+  --rank-c: #3b82f6;  --rank-c-glow: rgba(59, 130, 246, 0.60);   /* azure */
+  --rank-b: #a855f7;  --rank-b-glow: rgba(168, 85, 247, 0.60);   /* amethyst */
+  --rank-a: #fbbf24;  --rank-a-glow: rgba(251, 191, 36, 0.65);   /* amber */
+  --rank-s: #ef4444;  --rank-s-glow: rgba(239, 68, 68, 0.75);    /* crimson */
+
+  /* ---------- LEGENDARY / SEMANTIC ---------- */
+  --legendary:       #ffd76a;
+  --legendary-glow:  rgba(255, 215, 106, 0.85);
+  --warn:            #ff6b6b;
+  --ok:              #4ade80;
+
+  /* Proxy variables updated via body[data-rank="X"] */
+  --rank-color: var(--rank-e);
+  --rank-glow:  var(--rank-e-glow);
+
+  /* ---------- TYPE ---------- */
+  --font-mono:    'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
+  --font-display: 'Orbitron', 'JetBrains Mono', monospace;
+
+  /* ---------- MOTION ---------- */
+  --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-snap: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* ---------- SEMANTIC SIZES ---------- */
+  --fs-nano:    9px;   /* tags, idx labels */
+  --fs-micro:  10px;   /* meta */
+  --fs-xs:     11px;   /* nav items, panel titles */
+  --fs-sm:     12px;   /* caption */
+  --fs-body:   14px;   /* default */
+  --fs-lg:     16px;   /* hunter name, section heads */
+  --fs-xl:     24px;   /* hero stat */
+  --fs-2xl:    32px;   /* display numbers */
+  --fs-3xl:    48px;   /* ceremony headings */
+
+  --tracking-tight:  0.02em;
+  --tracking-mid:    0.12em;
+  --tracking-wide:   0.20em;
+  --tracking-widest: 0.30em;
+
+  --radius-sharp: 0;    /* Solo Leveling UIs are sharp-cornered */
+  --radius-hair:  2px;  /* panel; barely-rounded */
+  --radius-pill:  999px;/* only for dots / LEDs */
+}
+
+/* Per-rank override — flips all --rank-color consumers */
+body[data-rank="E"] { --rank-color: var(--rank-e); --rank-glow: var(--rank-e-glow); }
+body[data-rank="D"] { --rank-color: var(--rank-d); --rank-glow: var(--rank-d-glow); }
+body[data-rank="C"] { --rank-color: var(--rank-c); --rank-glow: var(--rank-c-glow); }
+body[data-rank="B"] { --rank-color: var(--rank-b); --rank-glow: var(--rank-b-glow); }
+body[data-rank="A"] { --rank-color: var(--rank-a); --rank-glow: var(--rank-a-glow); }
+body[data-rank="S"] { --rank-color: var(--rank-s); --rank-glow: var(--rank-s-glow); }
+
+/* =========================================================
+   SEMANTIC TYPOGRAPHY
+   Display: Orbitron — widescreen, tracked, for headings + numerics
+   Mono:    JetBrains Mono — default body, labels, code
+   ========================================================= */
+
+.display, h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: var(--tracking-mid);
+  font-weight: 700;
+}
+
+h1 { font-size: 32px; font-weight: 900; letter-spacing: var(--tracking-wide); text-transform: uppercase; }
+h2 { font-size: 22px; font-weight: 800; letter-spacing: var(--tracking-wide); text-transform: uppercase; }
+h3 { font-size: 14px; font-weight: 800; letter-spacing: var(--tracking-widest); text-transform: uppercase; color: var(--sys-cyan); }
+h4 { font-size: 11px; font-weight: 700; letter-spacing: var(--tracking-widest); text-transform: uppercase; color: var(--text-secondary); }
+
+p, .body {
+  font-family: var(--font-mono);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-primary);
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.numeric, .hero-num {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+.hero-num { font-size: 48px; letter-spacing: 0.04em; }
+
+code, .code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--sys-cyan);
+  background: rgba(94,225,255,0.06);
+  padding: 1px 6px;
+  border: 1px solid var(--border-dim);
+}
+
+.uppercase { text-transform: uppercase; letter-spacing: var(--tracking-wide); }
+.mono      { font-family: var(--font-mono); }
+.dim       { color: var(--text-secondary); }
+.faint     { color: var(--text-muted); }
+.hl        { color: var(--sys-cyan); text-shadow: 0 0 12px var(--sys-cyan-glow); }
+.hl-rank   { color: var(--rank-color); text-shadow: 0 0 12px var(--rank-glow); }
