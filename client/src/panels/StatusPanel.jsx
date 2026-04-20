@@ -131,9 +131,12 @@ export default function StatusPanel() {
                     border: `1.5px solid ${done ? 'var(--ok)' : 'var(--border-mid)'}`,
                     display: 'grid', placeItems: 'center',
                     color: 'var(--ok)',
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 900,
+                    fontSize: 10,
                     boxShadow: done ? '0 0 12px var(--ok)' : 'none'
                   }}>
-                    {done && '✓'}
+                    {done ? '◆' : ''}
                   </div>
                   <div>
                     <div style={{ fontSize: 12, letterSpacing: '0.12em', color: done ? 'var(--text-muted)' : 'var(--text-primary)', textDecoration: done ? 'line-through' : 'none' }}>

@@ -32,12 +32,18 @@ export default function BiometricWidget() {
         bottom: 14, right: 14,
         minWidth: 280, maxWidth: 320,
         padding: 12,
-        background: 'rgba(5,6,10,0.95)',
+        background: 'linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-panel-2) 100%)',
         border: '1px solid var(--border-mid)',
+        borderRadius: 2,
         zIndex: 40,
         fontFamily: 'var(--font-mono)',
-        backdropFilter: 'blur(6px)'
+        boxShadow: '0 0 24px rgba(0,0,0,0.6), 0 0 0 1px rgba(94,225,255,0.05)'
       }}>
+      {/* Panel top-edge highlight — matches .panel ::before */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: 1,
+        background: 'var(--border-hot)', opacity: 0.35, pointerEvents: 'none'
+      }} />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <motion.div
@@ -45,11 +51,16 @@ export default function BiometricWidget() {
             transition={{ duration: 2, repeat: Infinity }}
             style={{ width: 6, height: 6, borderRadius: '50%', background: STATUS_COLOR[status], boxShadow: `0 0 8px ${STATUS_COLOR[status]}` }}
           />
-          <span style={{ fontSize: 9, letterSpacing: '0.25em', color: 'var(--text-secondary)' }}>
-            BIOMETRIC MONITOR
+          <span style={{
+            fontSize: 9, letterSpacing: '0.25em',
+            color: 'var(--sys-cyan)',
+            fontFamily: 'var(--font-display)', fontWeight: 700,
+            textTransform: 'uppercase'
+          }}>
+            ▸ BIOMETRIC MONITOR
           </span>
         </div>
-        <span style={{ fontSize: 9, color: 'var(--text-muted)' }}>
+        <span style={{ fontSize: 9, color: 'var(--text-muted)', letterSpacing: '0.2em' }}>
           {lastSync ? new Date(lastSync).toLocaleTimeString().slice(0, 5) : '--:--'}
         </span>
       </div>
@@ -95,7 +106,7 @@ export default function BiometricWidget() {
             <div>
               <div style={{ color: 'var(--text-muted)', letterSpacing: '0.2em' }}>LC TODAY</div>
               <div style={{ color: today ? 'var(--ok)' : 'var(--warn)', fontFamily: 'var(--font-display)', fontSize: 14 }}>
-                {today ? '✓' : '◇'}
+                {today ? '◆' : '◇'}
               </div>
             </div>
             <div>
