@@ -18,7 +18,7 @@ export default function RecoveryGauge({ score = 0, size = 260 }) {
             <stop offset="100%" stopColor={grade.color} stopOpacity="1" />
           </linearGradient>
         </defs>
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--border-dim)" strokeWidth="8" />
         <motion.circle
           cx={cx} cy={cy} r={r} fill="none"
           stroke="url(#rg-grad)" strokeWidth="8" strokeLinecap="round"

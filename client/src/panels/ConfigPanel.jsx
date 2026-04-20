@@ -254,9 +254,11 @@ export default function ConfigPanel() {
           padding: 12, border: `1px solid ${msg.err ? 'var(--warn)' : 'var(--ok)'}`,
           background: `rgba(${msg.err ? '239,68,68' : '74,222,128'},0.06)`,
           color: msg.err ? 'var(--warn)' : 'var(--ok)',
-          fontSize: 11, letterSpacing: '0.15em'
+          fontSize: 11, letterSpacing: '0.15em',
+          fontFamily: 'var(--font-mono)',
+          textShadow: `0 0 10px ${msg.err ? 'rgba(255,107,107,0.4)' : 'rgba(74,222,128,0.4)'}`
         }}>
-          {msg.err ? '✕ ' : '✓ '}{msg.text}
+          {msg.err ? '◇ ' : '◆ '}{msg.text}
         </div>
       )}
     </div>
