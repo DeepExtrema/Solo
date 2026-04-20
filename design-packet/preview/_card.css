@@ -1,0 +1,94 @@
+/* Shared card chrome for preview specimens.
+   Each card targets ~700px wide; design system tab caps height. */
+@import url('../colors_and_type.css');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+body {
+  padding: 18px;
+  position: relative;
+  letter-spacing: 0.02em;
+}
+
+/* Animated grid background — subtle on small cards */
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(94, 225, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(94, 225, 255, 0.05) 1px, transparent 1px);
+  background-size: 36px 36px;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse at center, #000 50%, transparent 95%);
+  z-index: 0;
+}
+body::after {
+  content: "";
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+main, .card-root {
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 12px var(--sys-cyan-glow); }
+  50%      { box-shadow: 0 0 22px var(--sys-cyan-glow); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.row { display: flex; gap: 14px; align-items: center; }
+.col { display: flex; flex-direction: column; gap: 14px; }
+.grow { flex: 1; }
+
+.swatch {
+  width: 100%;
+  aspect-ratio: 1.8 / 1;
+  border: 1px solid var(--border-dim);
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 8px 10px;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+.swatch .tok { color: rgba(255,255,255,0.8); font-family: var(--font-mono); }
+.swatch .hex { color: rgba(255,255,255,0.55); font-family: var(--font-mono); }
+
+.chip {
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  border: 1px solid var(--border-mid);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+.label-tiny {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}

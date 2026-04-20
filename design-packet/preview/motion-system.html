@@ -1,0 +1,28 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Motion</title>
+<link rel="stylesheet" href="_card.css">
+<style>
+  @keyframes shim { 0%{ background-position:-200% 0;} 100%{ background-position:200% 0;} }
+  @keyframes pulseG { 0%,100% { box-shadow: 0 0 12px rgba(94,225,255,0.55); } 50% { box-shadow: 0 0 26px rgba(94,225,255,0.55); } }
+  @keyframes drift { 0% { transform: translateY(30px); opacity:0;} 20% {opacity:.5;} 80%{opacity:.5;} 100% { transform: translateY(-60px); opacity:0;} }
+  .demo { position:relative; height:72px; background:rgba(0,0,0,0.35); border:1px solid rgba(80,120,200,0.2); padding:10px; }
+</style></head>
+<body>
+<main class="card-root">
+  <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+    <div class="demo">
+      <div class="label-tiny" style="margin-bottom:6px;">pulseGlow 1.8s</div>
+      <div style="width:16px; height:16px; border-radius:50%; background:#5ee1ff; animation: pulseG 1.8s ease-in-out infinite; margin:8px auto;"></div>
+    </div>
+    <div class="demo">
+      <div class="label-tiny" style="margin-bottom:6px;">shimmer 2.4s</div>
+      <div style="height:10px; margin-top:14px; background: linear-gradient(90deg,#3b82f6,rgba(255,255,255,0.6),#3b82f6); background-size:200% 100%; animation: shim 2.4s linear infinite; border:1px solid rgba(80,120,200,0.2);"></div>
+    </div>
+    <div class="demo" style="overflow:hidden;">
+      <div class="label-tiny" style="margin-bottom:6px;">runeFloat 22s</div>
+      <div style="position:absolute; left:50%; bottom:-20px; font-family:Orbitron; font-weight:900; font-size:16px; color:#5ee1ff; text-shadow:0 0 10px #5ee1ff; animation: drift 4s linear infinite;">◈</div>
+    </div>
+  </div>
+  <div class="label-tiny" style="margin-top:10px">EASE-OUT (0.16,1,0.3,1) · 160–220MS UI · 600–900MS CEREMONY · NEVER BOUNCY</div>
+</main>
+</body></html>

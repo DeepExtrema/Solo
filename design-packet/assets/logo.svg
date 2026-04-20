@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 120" width="600" height="120">
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3.5" result="b"></feGaussianBlur>
+      <feMerge><feMergeNode in="b"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+    </filter>
+    
+  </defs>
+  <rect width="600" height="120" fill="#05060a"></rect>
+  <circle cx="40" cy="58" r="9" fill="#5ee1ff" filter="url(#glow)">
+    
+  </circle>
+  <text x="64" y="68" class="wm" filter="url(#glow)">PARALLAX GATE</text>
+  <text x="64" y="92" class="sub">:: SYSTEM INTERFACE //</text>
+</svg>

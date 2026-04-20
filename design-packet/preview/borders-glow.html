@@ -1,0 +1,22 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Borders &amp; Glow</title>
+<link rel="stylesheet" href="_card.css"></head>
+<body>
+<main class="card-root">
+  <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:14px;">
+    <div style="padding:16px; background:linear-gradient(180deg,#0d0f18,#121524); border:1px solid rgba(80,120,200,0.15);">
+      <div class="label-tiny">--border-dim · default</div>
+      <div style="color:#8896b5; font-size:11px; margin-top:6px; letter-spacing:0.2em; text-transform:uppercase;">PANEL EDGE · 15% α</div>
+    </div>
+    <div style="padding:16px; background:linear-gradient(180deg,#0d0f18,#121524); border:1px solid rgba(100,180,255,0.30);">
+      <div class="label-tiny">--border-mid · interactive</div>
+      <div style="color:#8896b5; font-size:11px; margin-top:6px; letter-spacing:0.2em; text-transform:uppercase;">BUTTONS · INPUTS · 30% α</div>
+    </div>
+    <div style="padding:16px; background:linear-gradient(180deg,#0d0f18,#121524); border:1px solid rgba(120,220,255,0.60); box-shadow:0 0 18px rgba(94,225,255,0.55);">
+      <div class="label-tiny" style="color:#5ee1ff">--border-hot · hover / active</div>
+      <div style="color:#5ee1ff; font-size:11px; margin-top:6px; letter-spacing:0.2em; text-transform:uppercase;">+ 0 0 18PX GLOW</div>
+    </div>
+  </div>
+  <div class="label-tiny" style="margin-top:14px">GLOW REPLACES SHADOW · CORNERS ARE SHARP (0–2PX) · LEDS ARE PILLS</div>
+</main>
+</body></html>
