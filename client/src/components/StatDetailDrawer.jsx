@@ -55,7 +55,7 @@ export default function StatDetailDrawer({ statKey, onClose }) {
                     {def.name}
                   </div>
                 </div>
-                <button onClick={onClose}>✕ CLOSE</button>
+                <button onClick={onClose}>◇ CLOSE</button>
               </div>
               <div style={{ fontStyle: 'italic', color: 'var(--text-secondary)', fontSize: 11, marginTop: 8 }}>
                 "{def.flavor}"

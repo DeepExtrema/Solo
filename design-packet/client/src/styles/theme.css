@@ -1,0 +1,64 @@
+/* PARALLAX GATE :: Dark Fantasy System Theme */
+
+:root {
+  /* Base palette */
+  --bg-void: #05060a;
+  --bg-deep: #0a0a0f;
+  --bg-panel: #0d0f18;
+  --bg-panel-2: #121524;
+  --bg-elevated: #161a2b;
+
+  --border-dim: rgba(80, 120, 200, 0.15);
+  --border-mid: rgba(100, 180, 255, 0.30);
+  --border-hot: rgba(120, 220, 255, 0.60);
+
+  --text-primary: #d9e5ff;
+  --text-secondary: #8896b5;
+  --text-muted: #4a5475;
+  --text-faint: #2a3148;
+
+  /* System cyan — neutral glow */
+  --sys-cyan: #5ee1ff;
+  --sys-cyan-dim: #2a8db0;
+  --sys-cyan-glow: rgba(94, 225, 255, 0.55);
+
+  /* Rank colors */
+  --rank-e: #8a8a98;
+  --rank-e-glow: rgba(138, 138, 152, 0.55);
+  --rank-d: #4ade80;
+  --rank-d-glow: rgba(74, 222, 128, 0.55);
+  --rank-c: #3b82f6;
+  --rank-c-glow: rgba(59, 130, 246, 0.60);
+  --rank-b: #a855f7;
+  --rank-b-glow: rgba(168, 85, 247, 0.60);
+  --rank-a: #fbbf24;
+  --rank-a-glow: rgba(251, 191, 36, 0.65);
+  --rank-s: #ef4444;
+  --rank-s-glow: rgba(239, 68, 68, 0.75);
+
+  --legendary: #ffd76a;
+  --legendary-glow: rgba(255, 215, 106, 0.85);
+
+  --warn: #ff6b6b;
+  --ok: #4ade80;
+
+  /* Current-rank proxy (updated on rank change) */
+  --rank-color: var(--rank-e);
+  --rank-glow: var(--rank-e-glow);
+
+  /* Fonts */
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
+  --font-display: 'Orbitron', 'JetBrains Mono', monospace;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-snap: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Per-rank body override — set data-rank on <body> */
+body[data-rank="E"] { --rank-color: var(--rank-e); --rank-glow: var(--rank-e-glow); }
+body[data-rank="D"] { --rank-color: var(--rank-d); --rank-glow: var(--rank-d-glow); }
+body[data-rank="C"] { --rank-color: var(--rank-c); --rank-glow: var(--rank-c-glow); }
+body[data-rank="B"] { --rank-color: var(--rank-b); --rank-glow: var(--rank-b-glow); }
+body[data-rank="A"] { --rank-color: var(--rank-a); --rank-glow: var(--rank-a-glow); }
+body[data-rank="S"] { --rank-color: var(--rank-s); --rank-glow: var(--rank-s-glow); }

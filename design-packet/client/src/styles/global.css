@@ -4,8 +4,6 @@
   padding: 0;
 }
 
-:root { color-scheme: dark; }
-
 html, body, #root {
   height: 100%;
   background: var(--bg-void);
@@ -13,8 +11,6 @@ html, body, #root {
   font-family: var(--font-mono);
   font-size: 14px;
   overflow: hidden;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
 }
 
 body {
@@ -105,179 +101,16 @@ button:disabled {
   box-shadow: none;
 }
 
-button:focus-visible {
-  outline: none;
-  border-color: var(--border-hot);
-  box-shadow: 0 0 18px var(--sys-cyan-glow);
-  color: var(--sys-cyan);
-}
-
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   letter-spacing: 0.12em;
   font-weight: 700;
 }
 
-/* ============================================================
-   FORM INPUTS — system-spec sharp-cornered, cyan focus glow,
-   dark color-scheme so native pickers (time/date/number) honour
-   the void. No filled rectangles; borders + glow do the work.
-   ============================================================ */
-
-input:not([type='button']):not([type='submit']):not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']),
-textarea,
-select {
-  width: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid var(--border-mid);
-  color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  padding: 8px 10px;
-  letter-spacing: 0.05em;
-  outline: none;
-  border-radius: 0;
-  transition: all 160ms var(--ease-out);
-  color-scheme: dark;
-}
-
-input:not([type='button']):not([type='submit']):not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']):hover,
-textarea:hover,
-select:hover {
-  border-color: var(--border-hot);
-}
-
-input:not([type='button']):not([type='submit']):not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']):focus,
-textarea:focus,
-select:focus {
-  border-color: var(--sys-cyan);
-  box-shadow: 0 0 14px var(--sys-cyan-glow), inset 0 0 8px rgba(94, 225, 255, 0.06);
-  color: var(--sys-cyan);
-}
-
-::placeholder {
-  color: var(--text-muted);
-  opacity: 0.65;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  font-size: 11px;
-}
-
-/* Number / time / date pickers: hide the chrome spinner halo where possible */
-input[type='time']::-webkit-calendar-picker-indicator,
-input[type='date']::-webkit-calendar-picker-indicator,
-input[type='datetime-local']::-webkit-calendar-picker-indicator {
-  filter: invert(0.85) sepia(1) hue-rotate(160deg) saturate(3);
-  cursor: pointer;
-  opacity: 0.7;
-}
-
-/* Range slider — terminal-track + cyan thumb */
-input[type='range'] {
-  -webkit-appearance: none; appearance: none;
-  width: 100%;
-  background: transparent;
-  height: 24px;
-  cursor: pointer;
-}
-input[type='range']::-webkit-slider-runnable-track {
-  height: 4px;
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid var(--border-dim);
-}
-input[type='range']::-moz-range-track {
-  height: 4px;
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid var(--border-dim);
-}
-input[type='range']::-webkit-slider-thumb {
-  -webkit-appearance: none; appearance: none;
-  width: 14px; height: 14px;
-  background: var(--sys-cyan);
-  border: 1px solid var(--sys-cyan);
-  margin-top: -6px;
-  box-shadow: 0 0 10px var(--sys-cyan-glow);
-  border-radius: 0;
-  cursor: pointer;
-}
-input[type='range']::-moz-range-thumb {
-  width: 14px; height: 14px;
-  background: var(--sys-cyan);
-  border: 1px solid var(--sys-cyan);
-  box-shadow: 0 0 10px var(--sys-cyan-glow);
-  border-radius: 0;
-  cursor: pointer;
-}
-
-/* Checkbox / radio — sharp boxes with cyan glow when checked */
-input[type='checkbox'],
-input[type='radio'] {
-  -webkit-appearance: none; appearance: none;
-  width: 14px; height: 14px;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid var(--border-mid);
-  cursor: pointer;
-  display: inline-grid;
-  place-items: center;
-  border-radius: 0;
-  transition: all 160ms var(--ease-out);
-  vertical-align: middle;
-}
-input[type='radio'] { border-radius: 50%; }
-input[type='checkbox']:hover,
-input[type='radio']:hover {
-  border-color: var(--border-hot);
-}
-input[type='checkbox']:checked,
-input[type='radio']:checked {
-  border-color: var(--sys-cyan);
-  box-shadow: 0 0 10px var(--sys-cyan-glow);
-}
-input[type='checkbox']:checked::before {
-  content: "";
-  width: 6px; height: 6px;
-  background: var(--sys-cyan);
-  box-shadow: 0 0 6px var(--sys-cyan);
-}
-input[type='radio']:checked::before {
-  content: "";
-  width: 6px; height: 6px;
-  background: var(--sys-cyan);
-  border-radius: 50%;
-  box-shadow: 0 0 6px var(--sys-cyan);
-}
-
-/* Anchor styling — match the System voice */
-a {
-  color: var(--sys-cyan);
-  text-decoration: none;
-  border-bottom: 1px dashed rgba(94, 225, 255, 0.3);
-  transition: all 160ms var(--ease-out);
-}
-a:hover {
-  border-bottom-color: var(--sys-cyan);
-  text-shadow: 0 0 10px var(--sys-cyan-glow);
-}
-
-/* Selection — cyan tint over the void */
-::selection {
-  background: rgba(94, 225, 255, 0.25);
-  color: #fff;
-  text-shadow: 0 0 8px var(--sys-cyan-glow);
-}
-
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: var(--border-mid);
-  border-radius: 0;
-  border: 1px solid transparent;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-hot);
-  box-shadow: inset 0 0 6px var(--sys-cyan-glow);
-}
-::-webkit-scrollbar-corner { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-hot); }
 
 /* Utility */
 .mono { font-family: var(--font-mono); }
